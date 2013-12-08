@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<typeInfoHistroy>
+<typeInfo handle="=HadoopLiblinear/src&lt;nju.lamda.svm{SvmReader.java[SvmReader" modifiers="513" timestamp="1382711645000"/>
+<typeInfo handle="=HadoopLiblinear/C:\/Program Files\/Java\/jdk1.7.0_09\/jre\/lib\/rt.jar&lt;javax.tools(Tool.class[Tool" modifiers="1537" timestamp="1352795097366"/>
+<typeInfo handle="=KeywordClassification/src&lt;baidu.openresearch.kw.feature{WordSegmenterBase.java[WordSegmenterBase" modifiers="513" timestamp="1383287194000"/>
+<typeInfo handle="=HadoopLiblinear/Y:\/lib\/hadoop-1.2.1\/hadoop-core-1.2.1.jar&lt;org.apache.hadoop.conf(Configured.class[Configured" modifiers="33" timestamp="1374531998000"/>
+<typeInfo handle="=KeywordClassification/Y:\/lib\/hadoop-1.2.1\/hadoop-core-1.2.1.jar&lt;org.apache.hadoop.util(Tool.class[Tool" modifiers="1537" timestamp="1374531998000"/>
+</typeInfoHistroy>

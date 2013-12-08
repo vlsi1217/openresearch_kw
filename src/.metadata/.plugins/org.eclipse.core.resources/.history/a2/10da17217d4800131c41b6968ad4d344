@@ -1,0 +1,84 @@
+package nju.lamda.hadoop.liblinear;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.HashMap;
+import java.util.TreeMap;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
+public class CompareResult 
+{
+	public static Integer[] getLabel(String filename) throws IOException
+	{
+		TreeMap<String, Integer> map = new TreeMap<String,Integer>();
+		BufferedReader reader = UtilsFileSystem.GetReader(new Path(filename));
+		String line;
+		
+		while( (line = reader.readLine()) != null)
+		{
+			line = line.trim();
+			if ( line.length() > 0)
+			{
+				PairKeyLabel pair= HadoopSvmIo.GetKeyLabel(line);
+				map.put(pair.key, pair.label);
+			}
+		}
+		reader.close();
+		
+		return map.values().toArray(new Integer[0]);
+	}
+	
+	public static double Compare(String filenameGT,String filenamePr) throws IOException
+	{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		BufferedReader reader = new BufferedReader(
+				new InputStreamReader(fs.open(new Path(filenameGT))));
+		String line;
+		HashMap<String,Integer> gtMap = new HashMap<String,Integer>();
+		
+		while( (line = reader.readLine()) != null)
+		{
+			line = line.trim();
+			if ( line.length() > 0)
+			{
+				PairKeyLabel pair= HadoopSvmIo.GetKeyLabel(line);
+				gtMap.put(pair.key, pair.label);
+			}
+		}
+		reader.close();
+		
+		reader = new BufferedReader(
+				new InputStreamReader(fs.open(new Path(filenamePr))));
+		
+		double acc = 0;
+		while( (line = reader.readLine()) != null)
+		{
+			line = line.trim();
+			
+			if ( line.length() > 0)
+			{
+				PairKeyLabel pair = HadoopSvmIo.GetKeyLabel(line);
+				
+				if ( gtMap.get((String) pair.key) == pair.label)
+				{
+					acc++;
+				}
+			}
+		}
+		reader.close();
+		
+		return acc / gtMap.size();
+	}
+	
+	public static void main(String args[]) throws IOException
+	{
+		System.out.println(Compare(args[0],args[1]));
+	}
+}

@@ -1,0 +1,13 @@
+package nju.lamda.hadoop.feaext;
+
+import java.util.Arrays;
+import java.util.HashSet;
+
+public class StopWords 
+{
+	public static final HashSet<String> stopwords
+		= new HashSet<String>(Arrays.asList(
+				"fdsf",
+				"dafa"
+				));
+}

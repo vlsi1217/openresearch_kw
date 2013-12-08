@@ -1,0 +1,256 @@
+package nju.lamda.hadoop.liblinear;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Scanner;
+
+import nju.lamda.hadoop.CopyFileSplitEx;
+import nju.lamda.hadoop.TextCopyFileInputFormat;
+import nju.lamda.hadoop.UtilsFileSystem;
+import nju.lamda.hadoop.UtilsMapReduce;
+import nju.lamda.svm.SvmIo;
+import nju.lamda.svm.SvmOp;
+import nju.lamda.svm.SvmRecord;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+
+public class PredictProcEx extends Configured implements Tool {
+	public String filenameData;
+	public String filenameModel;
+	public String filenameResult;
+	public String workingDir;
+	public int numClass;
+	
+	public static class MyMapper extends Mapper<LongWritable, Text, Text, Text> {
+		private Text k = new Text();
+		private Text v = new Text();
+
+		private int numDim;
+		private double bias;
+
+		double w[];
+		int label;
+		
+		private Path pathModelFile;
+
+		public void setup(Context context) {
+			Configuration conf = context.getConfiguration();
+			CopyFileSplitEx split = (CopyFileSplitEx) context.getInputSplit();
+			int index = split.getIndex();
+
+			try {
+				pathModelFile = new Path(conf.get("filename.model"));
+				
+				BufferedReader reader = UtilsFileSystem.GetReader(pathModelFile);
+
+				Scanner scanner = new Scanner(reader);
+				numDim = scanner.nextInt();
+				scanner.nextInt();
+				bias = scanner.nextDouble();
+
+				int wDim = numDim;
+				if (bias > 0) {
+					wDim++;
+				}
+				
+				scanner.close();
+				reader.close();
+				
+				reader = UtilsFileSystem.GetReader(pathModelFile);
+				
+				reader.readLine();
+				w = new double[wDim];
+				
+				for(int i=0;i<index;i++)
+				{
+					reader.readLine();
+				}
+				
+				scanner = new Scanner(reader);
+				
+				label = scanner.nextInt();
+				for(int i=0;i<wDim;i++)
+				{
+					if ( i%100000 == 0)
+					{
+						context.progress();
+					}
+					w[i] = scanner.nextDouble();
+				}
+
+				scanner.close();
+				reader.close();
+				
+			} catch (IOException e) {
+
+				e.printStackTrace();
+			}
+		}
+
+		public void map(IntWritable key, Text value, Context context)
+				throws IOException, InterruptedException {
+			String line = value.toString();
+			int bpos = line.indexOf('\t');
+			String id = line.substring(0, bpos);
+			SvmRecord rec = SvmIo.Parse(line.substring(bpos + 1), this.numDim,
+					this.bias);
+			
+			k.set(id);
+			double score = SvmOp.dot(w, rec.feature);
+			v.set("" + label + " " + score);
+			
+			context.write(k, v);
+		}
+	}
+	public static class MyCombiner extends Reducer<Text, Text, Text, Text> {
+
+		private Text outputKey = new Text();
+		private Text outputValue = new Text();
+
+		@Override
+		public void setup(Context context) {
+
+		}
+
+		public void reduce(Text key, Iterable<Text> values, Context context)
+				throws IOException, InterruptedException {
+
+			double maxscore = -99999;
+			String predictLabel = "";
+
+			for(Text val : values) {
+				String l = val.toString();
+
+				int i = l.indexOf(' ');
+
+				String label = l.substring(0, i);
+				double score = Double.parseDouble(l.substring(i + 1));
+
+				if (score > maxscore) {
+					maxscore = score;
+					predictLabel = label;
+				}
+			}
+
+			outputKey = key;
+			outputValue.set(predictLabel + " " + maxscore);
+
+			context.write(outputKey, outputValue);
+		}
+	}
+
+	public static class MyReducer extends Reducer<Text, Text, LongWritable, Text> {
+
+		private LongWritable outputKey = new LongWritable();
+		private Text outputValue = new Text();
+
+		@Override
+		public void setup(Context context) {
+
+		}
+
+		public void reduce(Text key, Iterable<Text> values, Context context)
+				throws IOException, InterruptedException {
+
+			double maxscore = -99999;
+			String predictLabel = "";
+
+			for(Text val : values) {
+				String l = val.toString();
+
+				int i = l.indexOf(' ');
+
+				String label = l.substring(0, i);
+				double score = Double.parseDouble(l.substring(i + 1));
+
+				if (score > maxscore) {
+					maxscore = score;
+					predictLabel = label;
+				}
+			}
+
+			outputKey.set(Long.parseLong(key.toString()));
+			outputValue.set(predictLabel + " " + maxscore);
+
+			context.write(outputKey, outputValue);
+		}
+	}
+
+	@Override
+	public int run(String[] as) throws Exception {
+		Configuration conf = getConf();
+
+		Job job = new Job(conf,"SVM Predict ProcessEx");
+		job.setJarByClass(PredictProcEx.class);
+        job.setMapperClass(MyMapper.class);
+        //job.setCombinerClass(MyCombiner.class);
+        job.setReducerClass(MyReducer.class);
+        job.setOutputKeyClass(LongWritable.class);
+        job.setMapOutputKeyClass(Text.class);
+        job.setOutputValueClass(Text.class);
+        job.setInputFormatClass(TextCopyFileInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+        job.setNumReduceTasks(50);
+        //job.setMapSpeculativeExecution(false);
+        //job.setSpeculativeExecution(false);
+        FileInputFormat.setMinInputSplitSize(job, 1024L*1024*512);
+        
+        Path output = new Path(workingDir + "/" + Constants.OUTDIR_SVM_PREDICT);
+        FileSystem fs = FileSystem.get(conf);
+        fs.deleteOnExit(output);
+        
+        
+        FileInputFormat.addInputPath(job, new Path(filenameData));
+        FileOutputFormat.setOutputPath(job, output);
+        fs.close();
+        conf = job.getConfiguration();
+        
+        conf.setInt("input.copyfile.number", this.numClass);
+        conf.set("filename.model", this.filenameModel);
+        
+		UtilsMapReduce.AddLibraryPath(conf, new Path("lib"));
+		
+        if (!job.waitForCompletion(true))
+        {
+        	return 1;
+        }
+        
+        Path pathResult = new Path(filenameResult);
+        
+        UtilsMapReduce.CopyResult(conf, output, pathResult, false);
+        
+        return 0;
+	}
+	public int run(String datafile, String modelfile, String resultfile,
+			String workingDir) throws Exception
+	{
+		this.workingDir = workingDir;
+		this.filenameData = datafile;
+		this.filenameModel = modelfile;
+		this.filenameResult = resultfile;
+		
+		BufferedReader r = UtilsFileSystem.GetReader(new Path(modelfile));
+		Scanner scanner = new Scanner(r);
+		scanner.nextInt();
+		this.numClass = scanner.nextInt();
+		scanner.close();
+		r.close();
+		
+		return ToolRunner.run(this, null);
+	}
+}

@@ -1,0 +1,12 @@
+package baidu.openresearch.kw;
+
+import org.apache.hadoop.fs.Path;
+
+public class TestNonHadoop 
+{
+	public static void main(String args[])
+	{
+		Path fileTest = new Path(args[0]);
+		
+	}
+}

@@ -1,0 +1,37 @@
+package baidu.openresearch.kw.feature;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import nju.lamda.hadoop.feaext.Punctuations;
+
+public class WordSegmenterCharNGram implements WordSegmenterBase {
+
+	@Override
+	public String[] segment(String line) throws IOException {
+		ArrayList<String> ret = new ArrayList<String>();
+		
+		for(int i=0;i<line.length();i++)
+		{
+			char ch1 = line.charAt(i);
+			char ch2 = line.charAt(i+1);
+			
+			String str1 = "" + ch1;
+			String str2 = "" + ch2;
+			
+			if ( !Punctuations.IsPunctuation(str1))
+			{
+				ret.add(str1);
+				
+				if ( !Punctuations.IsPunctuation(str2))
+				{
+					ret.add(str1+str2);
+				}
+			}
+			
+		}
+		
+		return ret.toArray(new String[0]);
+	}
+
+}

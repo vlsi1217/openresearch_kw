@@ -1,0 +1,19 @@
+package baidu.openresearch.kw.feature;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+
+import org.apache.hadoop.fs.Path;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+
+public class CountModelNonZero 
+{
+	public static void main(String args[]) throws IOException
+	{
+		BufferedReader r = UtilsFileSystem.GetReader(new Path(args[0]));
+		Scanner sc = new Scanner(r);
+		
+		r.close();
+	}
+}

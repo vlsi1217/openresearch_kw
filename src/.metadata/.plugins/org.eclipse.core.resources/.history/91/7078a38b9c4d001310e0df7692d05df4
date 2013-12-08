@@ -1,0 +1,100 @@
+package nju.lamda.hadoop;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+
+public class UtilsFileSystem 
+{
+	public static void MergeFiles(FileSystem fs, Path pathPattern, Path dst,
+			boolean append) 
+			throws IOException
+	{
+		FileStatus files[] = fs.globStatus(pathPattern);
+		
+		OutputStream out;
+		if ( append)
+		{
+			out = fs.append(dst);
+		}
+		else
+		{
+			out = fs.create(dst);
+		}
+		
+		for( FileStatus file : files)
+		{
+			if ( !file.isDir())
+			{
+				InputStream in = fs.open(file.getPath());
+				IOUtils.copyBytes(in, out, 1024*1024*64,false);
+				in.close();
+			}
+		}
+		
+		out.close();
+	}
+
+	public static void MergeFiles(FileSystem fs, Path pathPattern
+			, OutputStream dst) 
+			throws IOException
+	{
+		Configuration conf = fs.getConf();
+
+		FileStatus files[] = fs.globStatus(pathPattern);
+		
+		for( FileStatus file : files)
+		{
+			if ( !file.isDir())
+			{
+				InputStream in = fs.open(file.getPath());
+				IOUtils.copyBytes(in, dst, conf,false);
+				in.close();
+			}
+		}
+	}	
+	
+	public static void ForceDir(FileSystem fs, Path dir) throws IOException
+	{
+		if ( !fs.exists(dir) )
+		{
+			fs.mkdirs(dir);
+		}
+	}
+	
+	public static BufferedReader GetReader(Path file) throws IOException
+	{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		
+		return new BufferedReader(
+				new InputStreamReader(
+						fs.open(file)));
+	}
+	
+	public static BufferedWriter GetWriter(Path file) throws IOException
+	{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		
+		return new BufferedWriter(new OutputStreamWriter(fs.create(file)));
+	}
+	
+	public static boolean Exists(Path file) throws IOException
+	{
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		
+		return fs.exists(file);		
+	}
+}

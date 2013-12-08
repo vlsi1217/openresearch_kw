@@ -1,0 +1,12 @@
+package nju.lamda.hadoop.util;
+
+import org.apache.hadoop.fs.Path;
+
+public class CountLineNumber 
+{
+	public static void main(String args[])
+	{
+		Path input = new Path(args[0]);
+		
+	}
+}

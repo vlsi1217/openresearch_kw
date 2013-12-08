@@ -1,0 +1,9 @@
+package baidu.openresearch.kw.feature;
+
+public class CountModelNonZero 
+{
+	public static void main(String args[])
+	{
+		
+	}
+}

@@ -1,0 +1,39 @@
+package baidu.openresearch.kw;
+
+import java.io.BufferedReader;
+import java.util.Scanner;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+
+import org.apache.hadoop.fs.Path;
+
+public class TestNonHadoop 
+{
+	public static void main(String args[])
+	{
+		Path fileTest = new Path(args[0]);
+		Path fileModel = new Path(args[1]);
+		Path fileResult = new Path(args[2]);
+		
+		BufferedReader r = UtilsFileSystem.GetReader(fileModel);
+		Scanner sc = new Scanner(r);
+		int ndim = sc.nextInt();
+		int nclass = sc.nextInt();
+		double bias = sc.nextDouble();
+		
+		int wdim = ndim;
+		if ( bias > 0)
+		{
+			wdim++;
+		}
+		double ws[][] = new double[nclass][];
+		for(int i=0;i<ws.length;i++)
+		{
+			ws[i] = new double[wdim];
+		}
+		
+		int label[] = new int[nclass];
+		
+		
+	}
+}

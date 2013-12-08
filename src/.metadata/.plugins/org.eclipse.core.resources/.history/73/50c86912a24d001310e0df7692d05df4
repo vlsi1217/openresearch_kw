@@ -1,0 +1,169 @@
+package baidu.openresearch.kw;
+
+import java.io.IOException;
+
+import nju.lamda.hadoop.UtilsMapReduce;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+
+public class MergeResult extends Configured implements Tool {
+	public static class MyMapper extends
+			Mapper<LongWritable, Text, LongWritable, Text> {
+		private LongWritable outputKey = new LongWritable();
+		private Text outputValue = new Text();
+		char type;
+
+		public void setup(Context context) {
+			FileSplit split = (FileSplit) context.getInputSplit();
+
+			String filepath = split.getPath().toString();
+
+			if (filepath.indexOf("result") > 0) {
+				type = 'R';
+			} else if (filepath.indexOf("class") > 0) {
+				type = 'C';
+			}
+		}
+
+		public void map(LongWritable key, Text value, Context context)
+				throws IOException, InterruptedException {
+			String line = value.toString();
+
+			String parts[] = line.split("\t");
+			outputKey.set(Long.parseLong(parts[0]));
+			if (type == 'R') {
+				outputValue.set("R" + parts[1].split(" ")[0]);
+			} else if (type == 'C') {
+				if (parts.length == 3) {
+					outputValue.set("C" + parts[1] + "\t" + parts[2]);
+				} else if (parts.length == 2) {
+					outputValue.set("C" + parts[1]);
+				}
+			}
+
+			context.write(outputKey, outputValue);
+		}
+	}
+
+	public static class MyReducer extends
+			Reducer<LongWritable, Text, Text, Text> {
+		
+		private Text outputKey = new Text();
+		private Text outputValue = new Text();
+		
+		public void reduce(LongWritable key, Iterable<Text> values,
+				Context context) throws IOException, InterruptedException {
+			String keyword="";
+			String label = "";
+			for(Text val : values)
+			{
+				String str = val.toString();
+				if ( str.charAt(0) == 'R')
+				{
+					label = str.substring(1);
+				}
+				else if ( str.charAt(0) == 'C')
+				{
+					String substr = str.substring(1);
+					String parts[] = substr.split("\t");
+					
+					if ( parts.length == 2)
+					{
+						keyword = parts[0];
+						if ( label.length() == 0)
+						{
+							label = parts[1];
+						}
+					}
+					else if ( parts.length == 1)
+					{
+						keyword = "";
+						if ( label.length() == 0)
+						{
+							label = parts[0];
+						}						
+					}
+				}
+			}
+			outputKey.set(keyword);
+			outputValue.set(label);
+			
+			context.write(outputKey, outputValue);
+		}
+	}
+
+	public String filenameKeyword;
+	public String filenamePredict;
+	public String filenameResult;
+	public String workingDir;
+	
+	@Override
+	public int run(String[] args) throws Exception {
+		Configuration conf = getConf();
+		Job job = new Job(conf,"MergeResult");
+		job.setJarByClass(MergeResult.class);
+        job.setMapperClass(MyMapper.class);
+        job.setReducerClass(MyReducer.class);
+        job.setOutputKeyClass(LongWritable.class);
+        job.setOutputValueClass(Text.class);
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+        
+        FileInputFormat.addInputPath(job, new Path(this.filenameKeyword));
+        FileInputFormat.addInputPath(job, new Path(this.filenamePredict));
+       
+        Path output = new Path(workingDir + "/" + Constants.OUTDIR_TMP);
+        
+        conf = job.getConfiguration();
+        
+        FileSystem fs = FileSystem.get(conf);
+        fs.deleteOnExit(output);
+        fs.close();
+        FileOutputFormat.setOutputPath(job, output);
+        
+        conf.set("filename.keyword", this.filenameKeyword);
+        conf.set("filename.predict", this.filenamePredict);
+        
+        if (!job.waitForCompletion(true))
+        {
+        	return 1;
+        }
+		
+        UtilsMapReduce.CopyResult(conf, output
+        		, new Path(this.filenameResult), false);
+        
+		return 0;
+	}
+
+	public int run(String filekeyword, String filepredict, String fileresult,
+			String workingdir) throws Exception
+	{
+		this.filenameKeyword = filekeyword;
+		this.filenamePredict = filepredict;
+		this.filenameResult = fileresult;
+		this.workingDir = workingdir;
+		
+		return ToolRunner.run(this, null);
+	}
+	
+	public static void main(String args[]) throws Exception
+	{
+		(new MergeResult()).run(args[0], args[1], args[2], args[3]);
+	}
+}

@@ -1,0 +1,249 @@
+[
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "a3d1a9689f1c8e36ab64fb669df92076771c42f2",
+    "jarFileModificationDate": "2012-11-13T16:24:28.157+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\sunmscapi.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "hadoop-core-1.2.1",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "d64292a3b8ccad657c67f1a8e9397ef41b3b204f",
+    "jarFileModificationDate": "2013-07-23T06:26:38+08:00",
+    "location": "Y:\\lib\\hadoop-1.2.1\\hadoop-core-1.2.1.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "1452219d35189d95e8286a8d7a0577839f90a855",
+    "jarFileModificationDate": "2012-11-13T16:24:28.842+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\resources.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "de.bwaldvogel.liblinear",
+    "version": {
+      "major": 1,
+      "minor": 92,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "6edafca3436d0275dcd1a6bdfc5f5531978f50f8",
+    "jarFileModificationDate": "2013-10-20T18:23:39+08:00",
+    "location": "Y:\\work\\duapp\\kw\\java\\liblinear-1.92.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "5e45facee40145ddb96d65f654d889d3c2982c18",
+    "jarFileModificationDate": "2012-11-13T16:24:57.366+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\rt.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "d9ab18c443491faef6f49b7ae277eaecb767f144",
+    "jarFileModificationDate": "2012-11-13T16:24:27.962+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\dnsns.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "2380d475cf31c2d26437ce833246e641698cf620",
+    "jarFileModificationDate": "2012-11-13T16:24:28.122+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\sunjce_provider.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "hadoop-examples-1.2.1",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "8ca8d457a5ce440d71de3c0391f646689fda8143",
+    "jarFileModificationDate": "2013-07-23T06:26:38+08:00",
+    "location": "Y:\\lib\\hadoop-1.2.1\\hadoop-examples-1.2.1.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "608fcc9ae6f13523f33ee44c7537d1d532c654ba",
+    "jarFileModificationDate": "2012-11-13T16:24:28.600+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\jce.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "44eaf06d0533c2082d720e750022e08b3667eced",
+    "jarFileModificationDate": "2012-11-13T16:24:28.196+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\zipfs.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "3fd82593e018b269862fde3c393f13f100e51e39",
+    "jarFileModificationDate": "2012-11-13T16:24:53.442+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\charsets.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "77e1c9e49c197fe96b652743211389cb362ebb81",
+    "jarFileModificationDate": "2012-11-13T16:24:27.924+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\access-bridge-64.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "4a529fcce38d6d970982cad5ff0ca4e1044f37f2",
+    "jarFileModificationDate": "2012-11-13T16:24:57.636+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\localedata.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "IKAnalyzer2012",
+    "version": {
+      "major": -1,
+      "minor": -1,
+      "micro": -1,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "0c97e2d84b436bf99e29ae24ea070e0cb2978daa",
+    "jarFileModificationDate": "2012-02-20T14:33:46+08:00",
+    "location": "Y:\\work\\duapp\\kw\\java\\IKAnalyzer2012.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "c4c7923b11e98bc8d1d32bfd2ff6363d212ead80",
+    "jarFileModificationDate": "2012-11-13T16:24:28.112+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\sunec.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "a3c453a5ee5fb7f767c34b254f1ca4a9b542766f",
+    "jarFileModificationDate": "2012-11-13T16:24:54.474+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\jsse.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "cf4437b2a4a56b938f2af9da2b4368076ae51344",
+    "jarFileModificationDate": "2012-11-13T16:24:28+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\ext\\jaccess.jar",
+    "javaRuntime": true
+  },
+  {
+    "symbolicName": "org.apache.commons.logging",
+    "version": {
+      "major": 1,
+      "minor": 1,
+      "micro": 3,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "f6f66e966c70a83ffbdb6f17a0919eaf7c8aca7f",
+    "jarFileModificationDate": "2013-05-17T04:04:50+08:00",
+    "location": "Y:\\work\\duapp\\kw\\java\\commons-logging-1.1.3.jar",
+    "javaRuntime": false
+  },
+  {
+    "symbolicName": "jre",
+    "version": {
+      "major": 1,
+      "minor": 0,
+      "micro": 0,
+      "qualifier": ""
+    },
+    "jarFileFingerprint": "58a896c7e7718bc91efd3ae469fbb378da247feb",
+    "jarFileModificationDate": "2012-11-13T16:24:28.625+08:00",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\jfr.jar",
+    "javaRuntime": true
+  }
+]

@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Nov 15 12:41:12 CST 2013
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=Y\:\\work\\duapp\\kw\\java\\kw.jar
+manifest.mergeall=true
+manifest.mainclass=
+manifest.file=<createnew>
+jarname.isextern=true
+onejar.expand=
+excludes=<jar|hadoop-core-1.2.1.jar>;<jar|hadoop-examples-1.2.1.jar>;<jar|commons-logging-1.1.3.jar>
+includes=

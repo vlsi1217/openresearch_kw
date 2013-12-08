@@ -1,0 +1,16 @@
+package nju.lamda.hadoop;
+
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+public class CopyFileSplitEx extends FileSplit 
+{
+	public CopyFileSplitEx()
+    {
+    }
+
+    public CopyFileSplitEx(FileSplit fsp, int index)
+    {
+        
+    }	
+}

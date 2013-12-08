@@ -1,0 +1,5 @@
+package nju.lamda.hadoop.util;
+
+public class CountLineNumber {
+
+}

@@ -1,0 +1,15 @@
+package baidu.openresearch.kw;
+
+public class Script 
+{
+	public static void extractFeature(String filenameKeyword,
+			String filenameFeature)
+	{
+		
+	}
+	public static void main(String args[])
+	{
+		String filenameKeyword = args[0];
+		String filenameResult = args[1];
+	}
+}

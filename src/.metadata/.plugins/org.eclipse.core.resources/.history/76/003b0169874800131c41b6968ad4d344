@@ -1,0 +1,90 @@
+package nju.lamda.common;
+
+import java.util.Collections;
+import java.util.PriorityQueue;
+
+class IndexPair implements Comparable<IndexPair>
+{
+	public int index;
+	public double value;
+	
+	public IndexPair(int i, double v)
+	{
+		this.index = i;
+		this.value = v;
+	}
+	public int compareTo(IndexPair o) 
+	{
+		return (int)(this.value-o.value);
+	}	
+}
+
+
+public class ArrayOp 
+{
+	public static int[] TopKIndex(double values[], int k, boolean reverse)
+	{	
+		int ret[] = new int[k];
+		PriorityQueue<IndexPair> pqueue;
+		if ( reverse)
+		{	
+			pqueue = new PriorityQueue<IndexPair>(values.length,Collections.reverseOrder());
+		}
+		else
+		{
+			pqueue = new PriorityQueue<IndexPair>(values.length);
+		}
+		
+		for(int i=0;i<values.length;i++)
+		{
+			pqueue.add(new IndexPair(i,values[i]));
+		}
+		
+		for(int i=0;i<k;i++)
+		{
+			ret[i] = pqueue.poll().index;
+		}
+		
+		return ret;
+	}
+	
+	public static String ToString(double values[], double thresh)
+	{
+		StringBuffer buffer = new StringBuffer();
+		double val;
+		for( int i=0;i<values.length;i++)
+		{
+			val = values[i];
+			if ( Math.abs(val) < thresh)
+			{
+				buffer.append("0 ");
+			}
+			else
+			{
+				buffer.append(val);
+				buffer.append(' ');
+			}
+		}
+		
+		return buffer.toString();
+	}
+	
+	public static String ToString(double values[][])
+	{
+		StringBuffer buffer = new StringBuffer();
+		for(int i=0;i<values.length;i++)
+		{
+			int cnt = 0;
+			for(int j=0;j<values[i].length;j++)
+			{
+				if ( cnt != 0)
+				{
+					buffer.append(" ");
+				}
+				buffer.append(values[i][j]);
+				cnt++;
+			}
+			buffer.append("\n");
+		}
+	}
+}

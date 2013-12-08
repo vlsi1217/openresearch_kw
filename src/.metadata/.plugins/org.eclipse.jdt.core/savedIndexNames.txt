@@ -1,0 +1,21 @@
+INDEX VERSION 1.126+Y:\work\duapp\kw\java\code\.metadata\.plugins\org.eclipse.jdt.core
+259118764.index
+345087004.index
+1918855662.index
+460569605.index
+5051000.index
+512817337.index
+3754638663.index
+2374369193.index
+72423760.index
+1639850708.index
+3685183273.index
+1831863310.index
+786080586.index
+2445720804.index
+2899802475.index
+34323608.index
+1919756488.index
+1759209251.index
+3722618478.index
+11584174.index

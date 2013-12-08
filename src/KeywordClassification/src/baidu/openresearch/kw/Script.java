@@ -1,0 +1,122 @@
+package baidu.openresearch.kw;
+
+import java.util.ArrayList;
+
+import org.apache.hadoop.fs.Path;
+
+import baidu.openresearch.kw.feature.*;
+import nju.lamda.hadoop.UtilsFileSystem;
+import nju.lamda.hadoop.feaext.*;
+import nju.lamda.hadoop.liblinear.*;
+
+public class Script 
+{
+	public static int extractFeature(String filenameKeyword,
+			String filenameFeature) throws Exception
+	{
+		SplitLabelKeyword.run(filenameKeyword, Constants.FEA_FILE_LABEL
+				, Constants.FEA_FILE_KEYWORD);
+		int retcd = (new SegmentKeyword()).run(Constants.FEA_FILE_KEYWORD
+				, Constants.FEA_FILE_KEYWORD_SEG_NCHAR, 2, ".");
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+		retcd = (new SegmentKeyword()).run(Constants.FEA_FILE_KEYWORD
+				, Constants.FEA_FILE_KEYWORD_SEG_PERM, 3, ".");
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+		retcd = (new GenerateDictProc()).run(Constants.FEA_FILE_KEYWORD_SEG_NCHAR
+				, Constants.FEA_DICT_KEYWORD_NCHAR, 10, ".");
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+		retcd = (new GenerateDictProc()).run(Constants.FEA_FILE_KEYWORD_SEG_PERM
+				, Constants.FEA_DICT_KEYWORD_PERM, 2, ".");
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+//		retcd = (new RemoveDuplicateDict()).run(Constants.FEA_DICT_KEYWORD_NCHAR
+//				, Constants.FEA_DICT_KEYWORD_PERM, ".");
+//		if ( retcd != 0)
+//		{
+//			return retcd;
+//		}
+		
+		retcd = (new TfIdf()).run(Constants.FEA_FILE_KEYWORD_SEG_NCHAR
+				, Constants.FEA_DICT_KEYWORD_NCHAR
+				, Constants.FEA_RAWFEA_KEYWORD_NCHAR
+				, true, 10, ".");
+		if (retcd != 0)
+		{
+			return retcd;
+		}
+		retcd = (new TfIdf()).run(Constants.FEA_FILE_KEYWORD_SEG_PERM
+				, Constants.FEA_DICT_KEYWORD_PERM
+				, Constants.FEA_RAWFEA_KEYWORD_PERM
+				, true, 2, ".");
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+		int flen1 = (int) UtilsFileSystem.CountLine(
+				new Path(Constants.FEA_DICT_KEYWORD_NCHAR));
+		
+		ArrayList<String> rawfeaFiles = new ArrayList<String>();
+		ArrayList<Integer> rawfeaIndex = new ArrayList<Integer>();
+		rawfeaFiles.add(Constants.FEA_RAWFEA_KEYWORD_NCHAR);
+		rawfeaFiles.add(Constants.FEA_RAWFEA_KEYWORD_PERM);
+		rawfeaIndex.add(0);
+		rawfeaIndex.add(flen1);
+		
+		(new MergeLabelFeatures()).run(Constants.FEA_FILE_LABEL
+				, rawfeaFiles, rawfeaIndex
+				, filenameFeature, ".");
+		
+		return retcd;
+		
+	}
+	public static void main(String args[]) throws Exception
+	{
+		System.out.println("script start...");
+		long startTime = System.currentTimeMillis();
+		String filenameKeyword = args[0];
+		String filenameResult = args[1];
+		
+		int retcd = extractFeature(filenameKeyword, Constants.FEA_FILE_FEATURE);
+		if ( retcd != 0)
+		{
+			throw new Exception("return code not zero");
+		}
+		
+		SplitUnlabel.run(Constants.FEA_FILE_FEATURE
+				, Constants.FEA_FILE_FEATURE_TRAIN
+				, Constants.FEA_FILE_FEATURE_TEST);
+		retcd = (new Train()).run(Constants.FEA_FILE_FEATURE_TRAIN
+				, Constants.FEA_FILE_MODEL
+				, ".", 8, 1, 0.1, 200000, 10000);
+		if ( retcd != 0)
+		{
+			throw new Exception("return code not zero");
+		}
+		
+		(new Predict()).run(Constants.FEA_FILE_FEATURE_TEST
+				, Constants.FEA_FILE_MODEL
+				, Constants.FEA_FILE_MIDEL_RESULT, ".");
+		(new MergeResult()).run(Constants.FEA_FILE_KEYWORD
+				, Constants.FEA_FILE_LABEL
+				, Constants.FEA_FILE_MIDEL_RESULT
+				, filenameResult, ".");
+		System.out.println("script end, time cost " +
+				(System.currentTimeMillis()- startTime));
+	}
+}

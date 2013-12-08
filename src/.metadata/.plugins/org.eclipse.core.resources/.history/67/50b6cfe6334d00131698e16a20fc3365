@@ -1,0 +1,92 @@
+package baidu.openresearch.kw;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Scanner;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+import nju.lamda.hadoop.liblinear.SvmRecordHadoop;
+import nju.lamda.svm.SvmOp;
+
+import org.apache.hadoop.fs.Path;
+
+import de.bwaldvogel.liblinear.FeatureNode;
+
+public class TestNonHadoop 
+{
+	public static void main(String args[]) throws IOException
+	{
+		Path fileTest = new Path(args[0]);
+		Path fileModel = new Path(args[1]);
+		Path fileResult = new Path(args[2]);
+		
+		BufferedReader r = UtilsFileSystem.GetReader(fileModel);
+		Scanner sc = new Scanner(r);
+		int ndim = sc.nextInt();
+		int nclass = sc.nextInt();
+		double bias = sc.nextDouble();
+		
+		int wdim = ndim;
+		if ( bias > 0)
+		{
+			wdim++;
+		}
+		double ws[][] = new double[nclass][];
+		for(int i=0;i<ws.length;i++)
+		{
+			ws[i] = new double[wdim];
+		}
+		
+		int label[] = new int[nclass];
+		
+		for(int i=0;i<nclass;i++)
+		{
+			label[i] = sc.nextInt();
+			for(int j=0;j<wdim;j++)
+			{
+				ws[i][j] = sc.nextDouble();
+			}
+		}
+		sc.close();
+		r.close();
+		
+		r = UtilsFileSystem.GetReader(fileTest);
+		BufferedWriter w = UtilsFileSystem.GetWriter(fileResult);
+		
+		String line;
+		int cnt = 0;
+		while( (line=r.readLine())!=null)
+		{
+			SvmRecordHadoop rec = SvmRecordHadoop.Parse(line, ndim, bias);
+			double score = -99;
+			
+			FeatureNode[] x = rec.rec.feature;
+			int lab = -999;
+			for(int i=0;i<nclass;i++)
+			{
+				double s = SvmOp.dot(ws[i], x);
+				
+				if ( s > score)
+				{
+					lab = label[i];
+					score = s;
+				}
+			}
+			
+			w.write(rec.id + "\t" + lab + " " + score);
+			cnt++;
+			if ( cnt % 100000 == 0)
+			{
+				System.out.println(".");
+			}
+			if ( cnt % 1000000 == 0)
+			{
+				System.out.println("\n");
+			}
+		}
+		
+		r.close();
+		w.close();
+	}
+}

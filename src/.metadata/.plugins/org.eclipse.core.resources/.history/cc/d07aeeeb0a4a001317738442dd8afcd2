@@ -1,0 +1,14 @@
+package baidu.openresearch.kw.feature;
+
+import baidu.openresearch.kw.Constants;
+
+public class Script 
+{
+	public static void main(String args[])
+	{
+		SplitLabelKeyword.run(Constants.FEA_FILE_LABEL
+				, Constants.FEA_FILE_KEYWORD);
+		(new SegmentKeyword()).run(Constants.FEA_FILE_KEYWORD,
+				)
+	}
+}

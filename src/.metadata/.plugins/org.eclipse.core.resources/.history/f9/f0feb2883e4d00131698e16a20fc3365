@@ -1,0 +1,21 @@
+package baidu.openresearch.kw;
+
+import java.io.IOException;
+
+import baidu.openresearch.kw.feature.SplitLabelKeyword;
+
+public class Script 
+{
+	public static void extractFeature(String filenameKeyword,
+			String filenameFeature) throws IOException
+	{
+		SplitLabelKeyword.run(filenameKeyword, Constants.FEA_FILE_LABEL
+				, Constants.FEA_FILE_KEYWORD);
+		
+	}
+	public static void main(String args[])
+	{
+		String filenameKeyword = args[0];
+		String filenameResult = args[1];
+	}
+}

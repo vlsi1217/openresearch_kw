@@ -1,0 +1,47 @@
+package nju.lamda.hadoop;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.hadoop.mapreduce.InputSplit;
+import org.apache.hadoop.mapreduce.JobContext;
+import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.FileSplit;
+
+public class TextCopyFileInputFormat<IntWritable,Text> 
+	extends FileInputFormat<IntWritable,Text> 
+{
+
+	@Override
+    public List<InputSplit> getSplits(JobContext context)
+            throws IOException{
+		
+        int ncopy = context.getConfiguration().getInt(
+        		"input.copyfile.number", 1);
+        
+		List<InputSplit> fileSplits = super.getSplits(context);
+    	List<InputSplit> sps = new ArrayList<InputSplit>();
+    	
+    	for(int i=0;i<ncopy;i++)
+    	{
+    		for(InputSplit is : fileSplits)
+    		{
+    			FileSplit fs = (FileSplit) is;
+    			CopyFileSplitEx cfs = new CopyFileSplitEx(fs,i);
+    			sps.add(cfs);
+    		}
+    	}
+    	
+    	return sps;
+    }
+	@Override
+	public RecordReader<IntWritable, Text> createRecordReader(
+			InputSplit inputsplit, TaskAttemptContext taskattemptcontext) 
+					throws IOException,InterruptedException {
+		return new CopyFileLineRecordReader();
+	}
+
+}

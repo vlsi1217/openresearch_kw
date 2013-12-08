@@ -1,0 +1,32 @@
+{
+  "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\rt.jar": {
+    "coordinate": "jre:jre:zip:call:1.0.0",
+    "location": "C:\\Program Files\\Java\\jdk1.7.0_09\\jre\\lib\\rt.jar",
+    "status": "RESOLVED"
+  },
+  "Y:\\work\\duapp\\kw\\java\\code\\HadoopLiblinear\\src": {
+    "location": "Y:\\work\\duapp\\kw\\java\\code\\HadoopLiblinear\\src",
+    "status": "UNRESOLVED",
+    "error": "No class path info available for \u0027Y:\\work\\duapp\\kw\\java\\code\\HadoopLiblinear\\src\u0027. Skipped."
+  },
+  "Y:\\lib\\hadoop-1.2.1\\hadoop-core-1.2.1.jar": {
+    "location": "Y:\\lib\\hadoop-1.2.1\\hadoop-core-1.2.1.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027Y:\\lib\\hadoop-1.2.1\\hadoop-core-1.2.1.jar\u0027. Neither fingerprint \u0027d64292a3b8ccad657c67f1a8e9397ef41b3b204f\u0027 nor symbolic name \u0027hadoop-core-1.2.1\u0027 are known."
+  },
+  "Y:\\work\\duapp\\kw\\java\\liblinear-1.92.jar": {
+    "location": "Y:\\work\\duapp\\kw\\java\\liblinear-1.92.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027Y:\\work\\duapp\\kw\\java\\liblinear-1.92.jar\u0027. Neither fingerprint \u00276edafca3436d0275dcd1a6bdfc5f5531978f50f8\u0027 nor symbolic name \u0027de.bwaldvogel.liblinear\u0027 are known."
+  },
+  "Y:\\work\\duapp\\kw\\java\\code\\KeywordClassification\\src": {
+    "location": "Y:\\work\\duapp\\kw\\java\\code\\KeywordClassification\\src",
+    "status": "UNRESOLVED",
+    "error": "No class path info available for \u0027Y:\\work\\duapp\\kw\\java\\code\\KeywordClassification\\src\u0027. Skipped."
+  },
+  "Y:\\work\\duapp\\kw\\java\\IKAnalyzer2012.jar": {
+    "location": "Y:\\work\\duapp\\kw\\java\\IKAnalyzer2012.jar",
+    "status": "UNRESOLVED",
+    "error": "No call model found for \u0027Y:\\work\\duapp\\kw\\java\\IKAnalyzer2012.jar\u0027. Neither fingerprint \u00270c97e2d84b436bf99e29ae24ea070e0cb2978daa\u0027 nor symbolic name \u0027IKAnalyzer2012\u0027 are known."
+  }
+}

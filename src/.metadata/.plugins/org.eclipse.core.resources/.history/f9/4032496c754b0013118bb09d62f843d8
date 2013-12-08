@@ -1,0 +1,13 @@
+package baidu.openresearch.kw.feature;
+
+import java.io.IOException;
+
+public class WordSegmenterCharPerm implements WordSegmenterBase {
+
+	
+	@Override
+	public String[] segment(String line) throws IOException {
+		
+	}
+
+}

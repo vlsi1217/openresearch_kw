@@ -1,0 +1,49 @@
+package nju.lamda.hadoop;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IOUtils;
+
+public class UtilsFileSystem 
+{
+	public static void MergeFiles(FileSystem fs, Path pathPattern, Path dst,
+			boolean append) 
+			throws IOException
+	{
+		Configuration conf = fs.getConf();
+		FileStatus files[] = fs.globStatus(pathPattern);
+		
+		OutputStream out;
+		if ( append)
+		{
+			out = fs.append(dst);
+		}
+		else
+		{
+			out = fs.create(dst);
+		}
+		
+		for( FileStatus file : files)
+		{
+			InputStream in = fs.open(file.getPath());
+			IOUtils.copyBytes(in, out, conf);
+			in.close();
+		}
+		
+		out.close();
+	}
+	
+	public static void ForceDir(FileSystem fs, Path dir) throws IOException
+	{
+		if ( !fs.exists(dir) )
+		{
+			fs.mkdirs(dir);
+		}
+	}
+}

@@ -1,0 +1,19 @@
+package nju.lamda.hadoop.util;
+
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
+public class CountLineNumber 
+{
+	public static void main(String args[]) throws IOException
+	{
+		Path input = new Path(args[0]);
+		
+		Configuration conf = new Configuration();
+		FileSystem fs = FileSystem.get(conf);
+		
+	}
+}

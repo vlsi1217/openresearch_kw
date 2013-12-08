@@ -1,0 +1,94 @@
+package nju.lamda.hadoop.liblinear;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.TreeMap;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+
+import org.apache.hadoop.fs.Path;
+
+public class CompareResult 
+{
+	public static Integer[] getLabel(String filename) throws IOException
+	{
+		TreeMap<String, Integer> map = new TreeMap<String,Integer>();
+		BufferedReader reader = UtilsFileSystem.GetReader(new Path(filename));
+		String line;
+		
+		while( (line = reader.readLine()) != null)
+		{
+			line = line.trim();
+			if ( line.length() > 0)
+			{
+				PairKeyLabel pair= HadoopSvmIo.GetKeyLabel(line);
+				map.put(pair.key, pair.label);
+			}
+		}
+		reader.close();
+		
+		return map.values().toArray(new Integer[0]);
+	}
+	
+	public static double calcAc(Integer gt[], Integer pr[])
+	{
+		double acc = 0;
+		for(int i=0;i<gt.length;i++)
+		{
+			if ( gt[i].equals(pr[i]))
+			{
+				acc++;
+			}
+		}
+		
+		return acc/gt.length;
+	}
+	
+	public static double calcPr(Integer gt[], Integer pr[])
+	{
+		HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
+		for(int i=0;i<gt.length;i++)
+		{
+			map.put(gt[i], map.size());
+		}
+		double prs[] = new double[map.size()];
+		double tot[] = new double[map.size()];
+		
+		for(int i=0;i<gt.length;i++)
+		{
+			if ( gt[i].equals(pr[i]))
+			{
+				prs[map.get(gt[i])]++;
+			}
+			
+			tot[map.get(gt[i])]++;
+		}
+		
+		double prc = 0;
+		for(int i=0;i<map.size();i++)
+		{
+			prs[i] = prs[i] / tot[i];
+			prc += prs[i];
+		}
+		
+		return prc / map.size();
+		
+	}
+	public static double[] Compare(String filenameGT,String filenamePr) throws IOException
+	{
+		Integer labelGt[] = getLabel(filenameGT);	
+		Integer labelPr[] = getLabel(filenamePr);
+		
+		double ret[] = new double[2];
+		ret[0] = calcAc(labelGt, labelPr);
+		ret[1] = calcPr(labelGt, labelPr);
+		
+		return ret;
+	}
+	
+	public static void main(String args[]) throws IOException
+	{
+		//System.out.println(Compare(args[0],args[1]));
+	}
+}

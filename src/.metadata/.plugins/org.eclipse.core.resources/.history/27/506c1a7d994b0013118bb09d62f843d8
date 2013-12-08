@@ -1,0 +1,11 @@
+package nju.lamda.hadoop;
+
+import org.apache.hadoop.mapreduce.lib.input.LineRecordReader;
+
+public class CopyFileLineRecordReader 
+{
+	private LineRecordReader _lineReader;
+	private int _index;
+	
+	
+}

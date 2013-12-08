@@ -1,0 +1,205 @@
+package baidu.openresearch.kw.feature;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
+import nju.lamda.hadoop.UtilsFileSystem;
+import nju.lamda.hadoop.UtilsMapReduce;
+import nju.lamda.hadoop.liblinear.SvmRecordHadoop;
+import nju.lamda.svm.SvmIo;
+import nju.lamda.svm.SvmRecord;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.conf.Configured;
+import org.apache.hadoop.filecache.DistributedCache;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Job;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.apache.hadoop.mapreduce.Reducer;
+import org.apache.hadoop.mapreduce.Mapper.Context;
+import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
+import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
+import org.apache.hadoop.util.Tool;
+import org.apache.hadoop.util.ToolRunner;
+
+import baidu.openresearch.kw.Constants;
+
+import de.bwaldvogel.liblinear.FeatureNode;
+
+public class FeatureImportanceDict extends Configured implements Tool {
+
+	public static class MyMapper extends
+			Mapper<LongWritable, Text, IntWritable, Text> {
+		private IntWritable outputKey = new IntWritable();
+		private Text outputValue = new Text();
+
+		public void setup(Context context) {
+
+		}
+
+		@Override
+		public void map(LongWritable key, Text value, Context context)
+				throws IOException, InterruptedException {
+
+			SvmRecordHadoop rec = SvmRecordHadoop.FromText(value);
+
+			for (FeatureNode f : rec.rec.feature) {
+				outputKey.set(f.index);
+				outputValue.set("" + rec.rec.label + ":1");
+
+				context.write(outputKey, outputValue);
+			}
+		}
+	}
+
+	public static class MyReducer extends
+			Reducer<IntWritable, Text, IntWritable, Text> {
+		
+		private Text outputValue = new Text();
+		
+		@Override
+		public void reduce(IntWritable key, Iterable<Text> values,
+				Context context) throws IOException, InterruptedException {
+			TreeMap<Integer,Integer> map = new TreeMap<Integer,Integer>();
+			
+			for(Text val : values)
+			{
+				String parts[] = val.toString().split(":");
+				int label = Integer.parseInt(parts[0]);
+				int cnt = Integer.parseInt(parts[1]);
+				
+				Integer c = map.get(label);
+				if ( c == null)
+				{
+					c = 0;
+				}
+				c += cnt;
+				map.put(label, cnt);
+			}
+			
+			StringBuffer buf = new StringBuffer();
+			
+			for(Entry<Integer,Integer> entry : map.entrySet())
+			{
+				buf.append(entry.getKey());
+				buf.append(":");
+				buf.append(entry.getValue());
+				buf.append(" ");
+			}
+			
+			outputValue.set(buf.toString().trim());
+			context.write(key, outputValue);
+		}
+	}
+
+	private String filenameFeature;
+	private String workingDir;
+	private static final String TMP_DICT = "tmp_dict";
+	private String filenameResult;
+	
+	@Override
+	public int run(String[] arg0) throws Exception {
+		Configuration conf = getConf();
+		Job job = new Job(conf,FeatureImportanceDict.class.getName());
+		job.setJarByClass(FeatureImportanceDict.class);
+        job.setMapperClass(MyMapper.class);
+        job.setReducerClass(MyReducer.class);
+        job.setOutputKeyClass(LongWritable.class);
+        job.setOutputValueClass(Text.class);
+        job.setInputFormatClass(TextInputFormat.class);
+        job.setOutputFormatClass(TextOutputFormat.class);
+        
+        FileInputFormat.addInputPath(job, new Path(this.filenameFeature));
+        //FileInputFormat.setMaxInputSplitSize(job, 1024*1024*3);
+        
+        Path output = new Path(workingDir + "/" + Constants.OUTDIR_TMP);
+        
+        conf = job.getConfiguration();
+        
+        FileSystem fs = FileSystem.get(conf);
+        fs.deleteOnExit(output);
+        fs.close();
+        FileOutputFormat.setOutputPath(job, output);
+        
+        if (!job.waitForCompletion(true))
+        {
+        	return 1;
+        }
+		
+        UtilsMapReduce.CopyResult(conf, output
+        		, new Path(TMP_DICT), false);
+        
+		return 0;
+	}
+	
+	public int run(String filefea, String fileres, String workdir) throws Exception
+	{
+		this.filenameFeature = filefea;
+		this.workingDir = workdir;
+		
+		int retcd = ToolRunner.run(this, null);
+		
+		if ( retcd != 0)
+		{
+			return retcd;
+		}
+		
+		int classCnt[] = new int[33];
+		Arrays.fill(classCnt, 0);
+		int totalCnt = 0;
+		
+		BufferedReader r = UtilsFileSystem.GetReader(new Path(TMP_DICT));
+		String line;
+		while( (line = r.readLine())!=null)
+		{
+			SvmRecord rec = SvmIo.Parse(line);
+			
+			for(FeatureNode f : rec.feature)
+			{
+				classCnt[f.index-1] += f.value;
+				totalCnt += f.value;
+			}
+		}
+		
+		r.close();
+		BufferedWriter w = UtilsFileSystem.GetWriter(new Path(fileres));
+		r = UtilsFileSystem.GetReader(new Path(TMP_DICT));
+		while( (line = r.readLine())!=null)
+		{
+			SvmRecord rec = SvmIo.Parse(line);
+			
+			double maxRate = 0;
+			double cnt = 0;
+			for(FeatureNode f : rec.feature)
+			{
+				cnt += f.value;
+				maxRate = Math.max(f.value/classCnt[f.index-1], maxRate);
+			}
+			
+			double rate = maxRate / (cnt / totalCnt);
+			w.write("" + rec.label + "\t" + rate + "\n");
+		}
+		
+		r.close();		
+		w.close();
+		return 0;
+	}
+	
+	public static void main(String args[])
+	{
+		(new FeatureImportanceDict()).run(args[0],args[1],args[2]);
+	}
+
+}

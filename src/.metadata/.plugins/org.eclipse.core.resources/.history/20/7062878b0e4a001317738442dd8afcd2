@@ -1,0 +1,13 @@
+package baidu.openresearch.kw.feature;
+
+import java.io.IOException;
+
+public class WordSegmenterCharNGram implements WordSegmenterBase {
+
+	@Override
+	public String[] segment(String line) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

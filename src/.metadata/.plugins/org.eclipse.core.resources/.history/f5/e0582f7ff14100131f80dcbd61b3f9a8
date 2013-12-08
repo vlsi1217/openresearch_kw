@@ -1,0 +1,21 @@
+package nju.lamda.hadoop;
+
+import java.io.IOException;
+
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
+
+public class UtilsMapReduce 
+{
+	public static void CopyResult( Configuration conf, Path result, Path dst,
+			boolean append) 
+			throws IOException
+	{
+		FileSystem fs = FileSystem.get(conf);
+		
+		Path pattern = new Path(result.toString() + "/part*");
+		
+		UtilsFileSystem.MergeFiles(fs, pattern, dst, append);
+	}
+}

@@ -1,0 +1,19 @@
+package baidu.openresearch.kw.feature;
+
+import baidu.openresearch.kw.Constants;
+
+public class Script 
+{
+	public static void main(String args[]) throws Exception
+	{
+		SplitLabelKeyword.run(Constants.FEA_FILE_LABEL
+				, Constants.FEA_FILE_KEYWORD);
+		(new SegmentKeyword()).run(Constants.FEA_FILE_KEYWORD,
+				Constants.FEA_FILE_KEYWORD_SEG, 0, ".");
+		(new SegmentKeyword()).run(Constants.FEA_FILE_KEYWORD,
+				Constants.FEA_FILE_KEYWORD_SEG_CHAR, 1, ".");
+		(new SegmentTitle()).run(Constants.FEA_FILE_TITLE_SEG_CHAR,
+				1,".");
+		(new TfIdf())
+	}
+}
